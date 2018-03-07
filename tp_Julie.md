@@ -284,7 +284,7 @@ spark-submit --class sparkflair.Wordcount  --master yarn /home/ubuntu/SparkJob2.
 spark-submit --class sparkflair.Wordcount --master yarn --deploy-mode cluster /home/spark/SparkJob2.jar 
 // nope probleme hdfs://...
 
-spark-submit --class sparkflair.Wordcount --master yarn --deploy-mode cluster /home/spark/sparkjob.jar  
-// ok fonctionne hdfs:///...
+spark-submit --class sparkflair.Wordcount --master yarn --deploy-mode cluster /home/spark/sparkjob.jar
+// ok fonctionne avec hdfs:///...
 
 ```
