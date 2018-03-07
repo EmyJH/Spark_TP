@@ -10,7 +10,7 @@ val data = spark.read.textFile("hdfs://user/tp-hive/julie/data.csv").as[String] 
 val bibli = sc.textFile("hdfs://user/tp-hive/julie/data.csv")
 ```
 Traitement + action :
-```
+```scala
 val words = data.flatMap(value => value.split("\\s+"))
 val groupedWords = words.groupByKey(_.toLowerCase)
 val counts = groupedWords.count()
@@ -18,7 +18,7 @@ val counts = groupedWords.count()
 ```
 
 ## Affichage des résultats
-```
+```scala
 counts.show()
 counts.count() //longueur du resultat
 counts.rdd.coalesce(1).saveAsTextFile("PATH/res_wc.csv")
@@ -29,7 +29,7 @@ val linesWithlivre = textFile.filter(line => line.contains("Livre"))
 ```
 
 ## Lister les types exacts des objets suivants :
-```
+```scala
 spark.read.textFile("/tmp/data.txt")
 spark.read.textFile("/tmp/data.txt").as[String]
 data.flatMap()
@@ -43,7 +43,7 @@ val counts_agrege = counts.groupByKey(identity).count()  // Dataset[((String, In
 
 # jour 2 ( parallelize à voir) 
 ## RDD :
-```
+```scala
 val bibli = sc.textFile("hdfs://user/tp-hive/julie/data.csv") // RDD string
 val bibli = spark.read.textFile("/user/tp-hive/julie/data.csv").as[String]   // ok dataset
 
@@ -57,7 +57,7 @@ val groupedWords2 = words2.groupByKey(_.toLowerCase) // nope
 val groupedWords3 = words1.groupByKey(identity).count()  // nope
 ```
 ## from dataset
-```
+```scala
 val data = spark.read.textFile("/tmp/bibli.csv").as[String] // dataset string
 val words = data.flatMap(value => value.split("\\s+")) /// .Dataset[String] = [value: string]
 val groupedWords = words.groupByKey(_.toLowerCase) /// roupedDataset[String,String] 
@@ -72,7 +72,7 @@ linesWithLivre.rdd.coalesce(1).saveAsTextFile("/user/tp-spark/julie/bibli_filter
 
 # Spark sql
 ## Définition du contexte et chargement des fichiers
-```
+```scala
 val sqlcontext = new org.apache.spark.sql.SQLContext(sc) // 
 //  spark.read.option("header", "true").option("inferSchema", "true").csv("/user/pdg/testhive/nba.csv")
 // val df1 = sqlcontext.read.format("csv").option("header", "true").option("delimiter", ";").load("/tmp/bibli.csv")
@@ -80,7 +80,7 @@ val df = sqlcontext.read.format("csv").option("header", "true").option("delimite
 df.show() // montre les 20 premières lignes du dataframe
 ```
 ## Montre le schéma du dataframe
-```
+```scala
 scala> df.printSchema()
 root
  |-- Anne: integer (nullable = true)
@@ -90,7 +90,7 @@ root
  |-- id__: string (nullable = true)
 ```
 ## Afficher le début du dataframe only showing top 3 rows
-```
+```scala
 scala>  df.show(3)
 +----+--------------------+--------------------+----------+--------------------+
 |Anne|              Relais|            Typedoc |nombreprts|                id__|
@@ -102,7 +102,7 @@ scala>  df.show(3)
 ```
 
 ## select
-```
+```scala
 scala> df.select("Anne").show(5)
 +----+
 |Anne|
@@ -115,7 +115,7 @@ scala> df.select("Anne").show(5)
 +----+
 ```
 ## filtre supérieur à 
-```
+```scala
 scala>  df.filter(df("nombreprts") > 800).show(10)
 +----+--------------------+--------------------+----------+--------------------+
 |Anne|              Relais|            Typedoc |nombreprts|                id__|
@@ -134,7 +134,7 @@ scala>  df.filter(df("nombreprts") > 800).show(10)
 ```
 
 ## filtre supérieur not equal and contains
-```
+```scala
 df.filter($"Typedoc " !== "yolo").show(10)
 
 df.filter($"Typedoc " contains "Livre").show(5)
@@ -171,7 +171,7 @@ scala> df.filter($"Typedoc " contains "Livre").filter($"nombreprts" > 5).show(5)
 +----+--------------------+--------------------+----------+--------------------+
 ```
 ## filtre et groupBy et count
-```
+```scala
 scala> df.filter($"Typedoc " contains "Livre").groupBy("Typedoc ").count().show()
 +--------------------+-----+
 |            Typedoc |count|
@@ -185,7 +185,7 @@ scala> df.filter($"Typedoc " contains "Livre").groupBy("Typedoc ").count().show(
 +--------------------+-----+
 ```
 ## filtre, groupBy et somme
-```
+```scala
 scala> df.filter($"Typedoc " contains "Livre").groupBy("Typedoc ").sum().show()
 +--------------------+---------+---------------+
 |            Typedoc |sum(Anne)|sum(nombreprts)|
@@ -212,7 +212,7 @@ scala> df.select("Typedoc ", "nombreprts").filter($"Typedoc " contains "Livre").
 
 ```
 ## filtre groupBy et sort
-```
+```scala
 scala> df.select("Typedoc ", "nombreprts").filter($"Typedoc " contains "Livre").groupBy("Typedoc ").sum().sort(desc("Typedoc ")).show / .sort($"Typedoc ".desc)
 +--------------------+---------------+
 |            Typedoc |sum(nombreprts)|
@@ -228,7 +228,7 @@ scala> df.select("Typedoc ", "nombreprts").filter($"Typedoc " contains "Livre").
 
 ## Jointure
 
-```
+```scala
 scala> val dfb = df.drop($"nombreprts").drop($"id__")
 scala> val dfa = df.drop($"Anne").drop($"Typedoc")
 
@@ -261,7 +261,7 @@ root
  scala> val joinedDF = dfa.join(dfb, "Relais")
  ```
 ## pas de colonne en double
-```
+```scala
  scala> joinedDF.printSchema()  
  root
  |-- Relais: string (nullable = true)
@@ -277,7 +277,7 @@ fichier jar dans /home/spark
 jar compilé sous eclipse, tuto :
 https://data-flair.training/blogs/create-spark-scala-project/
 
-```
+```scala
 export SPARK_MAJOR_VERSION=2
 cd /usr/hdp/current/spark2-client/bin
 spark-submit --class sparkflair.Wordcount  --master yarn /home/ubuntu/SparkJob2.jar  // infini
