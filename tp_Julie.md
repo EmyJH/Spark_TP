@@ -1,7 +1,7 @@
 ﻿# tp spark  jour 1 
 
 ## Chargement du spark shell et import des fichiers dans spark
-```
+```scala
 sudo su spark
 cd /usr/hdp/current/spark2-client/
 hdfs dfs -copyFromLocal /etc/hadoop/conf/log4j.properties /tmp/data.txt
