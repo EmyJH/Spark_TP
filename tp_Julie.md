@@ -288,3 +288,10 @@ spark-submit --class sparkflair.Wordcount --master yarn --deploy-mode cluster /h
 // ok fonctionne avec hdfs:///...
 
 ```
+
+# avec script scala
+déposer le script dans /home/spark
+```
+//coller votre code scala
+spark-shell -i monscript.scala
+```
