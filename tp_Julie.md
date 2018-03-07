@@ -233,8 +233,8 @@ scala> val dfb = df.drop($"nombreprts").drop($"id__")
 scala> val dfa = df.drop($"Anne").drop($"Typedoc")
 
 scala> val joinedDF = dfa.join(dfb, dfa("Relais") === dfb("Relais"), "inner")
-18/03/06 14:35:43 WARN Column: Constructing trivially true equals predicate, 'Relais#641 = Relais#641'. Perhaps you need to use aliases.
-joinedDF: org.apache.spark.sql.DataFrame = [Relais: string, nombreprts: int ... 4 more fields]
+//18/03/06 14:35:43 WARN Column: Constructing trivially true equals predicate, 'Relais#641 = Relais#641'. Perhaps you need to //use aliases.
+//joinedDF: org.apache.spark.sql.DataFrame = [Relais: string, nombreprts: int ... 4 more fields]
 
 scala> joinedDF.printSchema  //// 2 fois relais ambiguous
 root
