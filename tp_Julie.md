@@ -273,8 +273,18 @@ root
 
 ## commande jar
 à tester : a=df.CreateGlobalTempView  ensuite spark.sql(a ...) 
+fichier jar dans /home/spark
+jar compilé sous eclipse, tuto :
+https://data-flair.training/blogs/create-spark-scala-project/
+
 ```
+export SPARK_MAJOR_VERSION=2
 cd /usr/hdp/current/spark2-client/bin
 spark-submit --class sparkflair.Wordcount  --master yarn /home/ubuntu/SparkJob2.jar  // infini
-spark-submit --class sparkflair.Wordcount --master yarn --deploy-mode cluster /home/spark/SparkJob2.jar
+spark-submit --class sparkflair.Wordcount --master yarn --deploy-mode cluster /home/spark/SparkJob2.jar 
+// nope probleme hdfs://...
+
+spark-submit --class sparkflair.Wordcount --master yarn --deploy-mode cluster /home/spark/sparkjob.jar  
+// ok fonctionne hdfs:///...
+
 ```
