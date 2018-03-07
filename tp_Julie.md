@@ -1,27 +1,35 @@
-﻿###### tp spark  jour 1 ################################
+﻿# tp spark  jour 1 
+
+## Chargement du spark shell et import des fichiers dans spark
+```
 sudo su spark
 cd /usr/hdp/current/spark2-client/
 hdfs dfs -copyFromLocal /etc/hadoop/conf/log4j.properties /tmp/data.txt
 val data = spark.read.textFile("/tmp/data.txt").as[String]
 val data = spark.read.textFile("hdfs://user/tp-hive/julie/data.csv").as[String] // nope
 val bibli = sc.textFile("hdfs://user/tp-hive/julie/data.csv")
-
+```
+Traitement + action :
+```
 val words = data.flatMap(value => value.split("\\s+"))
 val groupedWords = words.groupByKey(_.toLowerCase)
 val counts = groupedWords.count()
-
 // val counts = data.flatMap(line => line.split(";")).map(word => (word, 1)).reduceByKey(_ + _)
+```
 
+## Affichage des résultats
+```
 counts.show()
 counts.count() //longueur du resultat
 counts.rdd.coalesce(1).saveAsTextFile("PATH/res_wc.csv")
 counts.rdd.coalesce(1).saveAsTextFile("/tpspark/julie/res_wc.csv")
 counts.rdd.saveAsTextFile("/test/res_wc.csv")
 val linesWithlivre = textFile.filter(line => line.contains("Livre"))
+//val counts2 = groupedWords.reduceByKey(_ + _)
+```
 
- //val counts2 = groupedWords.reduceByKey(_ + _)
- 
-Lister les types exacts des objets suivants :
+## Lister les types exacts des objets suivants :
+```
 spark.read.textFile("/tmp/data.txt")
 spark.read.textFile("/tmp/data.txt").as[String]
 data.flatMap()
@@ -31,10 +39,11 @@ groupedWords.count()
 val bibli = sc.textFile("hdfs://user/tp-hive/julie/data.csv") // string
 val counts = data.flatMap(line => line.split(";")).map(word => (word, 1)) // c'est une liste : [_1: string, _2: int]
 val counts_agrege = counts.groupByKey(identity).count()  // Dataset[((String, Int), Long)] = [key: struct<_1: string, _2: int>, count(1): bigint]
+```
 
-
-###### jour 2 ############################# parallelize
-#### RDD :
+# jour 2 ( parallelize à voir) 
+## RDD :
+```
 val bibli = sc.textFile("hdfs://user/tp-hive/julie/data.csv") // RDD string
 val bibli = spark.read.textFile("/user/tp-hive/julie/data.csv").as[String]   // ok dataset
 
@@ -46,8 +55,9 @@ val words2 = bibli.flatMap(value => value.split("\\s+"))
 val groupedWords1 = words1.groupByKey(_.toLowerCase) // nope marche pas avec RDD
 val groupedWords2 = words2.groupByKey(_.toLowerCase) // nope
 val groupedWords3 = words1.groupByKey(identity).count()  // nope
-
-#### from dataset
+```
+## from dataset
+```
 val data = spark.read.textFile("/tmp/bibli.csv").as[String] // dataset string
 val words = data.flatMap(value => value.split("\\s+")) /// .Dataset[String] = [value: string]
 val groupedWords = words.groupByKey(_.toLowerCase) /// roupedDataset[String,String] 
@@ -58,14 +68,19 @@ val linesWithLivre = data.filter(line => line.contains("Livre"))/// .Dataset[Str
 
 counts.rdd.coalesce(1).saveAsTextFile("/user/tp-spark/julie/bibli_count.csv")
 linesWithLivre.rdd.coalesce(1).saveAsTextFile("/user/tp-spark/julie/bibli_filter.csv")
+```
 
-########### spark sql #########
+# Spark sql
+## Définition du contexte et chargement des fichiers
+```
 val sqlcontext = new org.apache.spark.sql.SQLContext(sc) // 
 //  spark.read.option("header", "true").option("inferSchema", "true").csv("/user/pdg/testhive/nba.csv")
 // val df1 = sqlcontext.read.format("csv").option("header", "true").option("delimiter", ";").load("/tmp/bibli.csv")
 val df = sqlcontext.read.format("csv").option("header", "true").option("delimiter", ";").option("inferSchema", "true").load("/user/tp-hive/julie/data.csv") 
 df.show() // montre les 20 premières lignes du dataframe
-
+```
+## Montre le schéma du dataframe
+```
 scala> df.printSchema()
 root
  |-- Anne: integer (nullable = true)
@@ -73,7 +88,9 @@ root
  |-- Typedoc : string (nullable = true)
  |-- nombreprts: integer (nullable = true)
  |-- id__: string (nullable = true)
- 
+```
+## Afficher le début du dataframe only showing top 3 rows
+```
 scala>  df.show(3)
 +----+--------------------+--------------------+----------+--------------------+
 |Anne|              Relais|            Typedoc |nombreprts|                id__|
@@ -82,8 +99,10 @@ scala>  df.show(3)
 |2015|1022033 Caulnes  ...|CD Compact Disc  ...|       351|0007e245-4194-40b...|
 |2009|1022047 Corlay   ...|LCD Livre disque ...|        32|0009819b-3ad8-456...|
 +----+--------------------+--------------------+----------+--------------------+
-only showing top 3 rows
+```
 
+## select
+```
 scala> df.select("Anne").show(5)
 +----+
 |Anne|
@@ -94,7 +113,9 @@ scala> df.select("Anne").show(5)
 |2015|
 |2015|
 +----+
-
+```
+## filtre supérieur à 
+```
 scala>  df.filter(df("nombreprts") > 800).show(10)
 +----+--------------------+--------------------+----------+--------------------+
 |Anne|              Relais|            Typedoc |nombreprts|                id__|
@@ -110,7 +131,10 @@ scala>  df.filter(df("nombreprts") > 800).show(10)
 |2015|1022217 Plougras ...|TOTAL            ...|       990|0149dd73-0c6f-4d2...|
 |2008|1022327 St Samson...|TOTAL            ...|       985|0158fbcf-97b4-4d7...|
 +----+--------------------+--------------------+----------+--------------------+
+```
 
+## filtre supérieur not equal and contains
+```
 df.filter($"Typedoc " !== "yolo").show(10)
 
 df.filter($"Typedoc " contains "Livre").show(5)
@@ -145,7 +169,9 @@ scala> df.filter($"Typedoc " contains "Livre").filter($"nombreprts" > 5).show(5)
 |2013|1022061 Evran    ...|LCD Livre disque ...|         6|001d1468-32a0-4da...|
 |2015|1022263 Qu�vert  ...|LCD Livre disque ...|         7|00210c87-1840-499...|
 +----+--------------------+--------------------+----------+--------------------+
-
+```
+## filtre et groupBy et count
+```
 scala> df.filter($"Typedoc " contains "Livre").groupBy("Typedoc ").count().show()
 +--------------------+-----+
 |            Typedoc |count|
@@ -157,7 +183,9 @@ scala> df.filter($"Typedoc " contains "Livre").groupBy("Typedoc ").count().show(
 |           LIV Livre|  584|
 |LCD Livre disque ...|  282|
 +--------------------+-----+
-
+```
+## filtre, groupBy et somme
+```
 scala> df.filter($"Typedoc " contains "Livre").groupBy("Typedoc ").sum().show()
 +--------------------+---------+---------------+
 |            Typedoc |sum(Anne)|sum(nombreprts)|
@@ -182,6 +210,9 @@ scala> df.select("Typedoc ", "nombreprts").filter($"Typedoc " contains "Livre").
 |LCD Livre disque ...|           3226|
 +--------------------+---------------+
 
+```
+## filtre groupBy et sort
+```
 scala> df.select("Typedoc ", "nombreprts").filter($"Typedoc " contains "Livre").groupBy("Typedoc ").sum().sort(desc("Typedoc ")).show / .sort($"Typedoc ".desc)
 +--------------------+---------------+
 |            Typedoc |sum(nombreprts)|
@@ -193,7 +224,11 @@ scala> df.select("Typedoc ", "nombreprts").filter($"Typedoc " contains "Livre").
 |LCA Livre cassett...|            324|
 |  LCA Livre cassette|              2|
 +--------------------+---------------+
+```
 
+## Jointure
+
+```
 scala> val dfb = df.drop($"nombreprts").drop($"id__")
 scala> val dfa = df.drop($"Anne").drop($"Typedoc")
 
@@ -211,7 +246,7 @@ root
  |-- Typedoc : string (nullable = true)
 
  
- scala> val joinedDF = dfa.as('a).join(dfb.as('b), $"a.Relais" === $"b.Relais")
+scala> val joinedDF = dfa.as('a).join(dfb.as('b), $"a.Relais" === $"b.Relais")
 joinedDF: org.apache.spark.sql.DataFrame = [Relais: string, nombreprts: int ... 4 more fields]
 
 scala> joinedDF.printSchema() // not ambiguous
@@ -223,20 +258,23 @@ root
  |-- Relais: string (nullable = true)
  |-- Typedoc : string (nullable = true)
  
-
-
  scala> val joinedDF = dfa.join(dfb, "Relais")
-
- scala> joinedDF.printSchema()  ///////// pas de colonne en double
+ ```
+## pas de colonne en double
+```
+ scala> joinedDF.printSchema()  
  root
  |-- Relais: string (nullable = true)
  |-- nombreprts: integer (nullable = true)
  |-- id__: string (nullable = true)
  |-- Anne: integer (nullable = true)
  |-- Typedoc : string (nullable = true)
+```
 
-
-
-############### a=df.CreateGlobalTempView  ensuite spark.sql(a ...) ###############
+## commande jar
+à tester : a=df.CreateGlobalTempView  ensuite spark.sql(a ...) 
+```
+cd /usr/hdp/current/spark2-client/bin
 spark-submit --class sparkflair.Wordcount  --master yarn /home/ubuntu/SparkJob2.jar  // infini
 spark-submit --class sparkflair.Wordcount --master yarn --deploy-mode cluster /home/spark/SparkJob2.jar
+```
