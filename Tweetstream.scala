@@ -16,10 +16,10 @@ import org.apache.spark.streaming.twitter.TwitterUtils
 
 class Tweetstream {
   def main(args:Array[String]) {
-        val consumerKey = "ojyylvdYrH1K02KjCN1dIAxNH";
-        val consumerSecret = "35bKepQJBpu41rwhFLAGBrVjQ9huSqdpc0kg1VAFqAD9eZxFqi";
-        val accessToken = "967042869189111808-Y5S1E2BBaQ4nQtSHcQ0D4MAZo48b6Wh";
-        val accessTokenSecret = "aOKhKKcoOqAqRSWpHy9ghgIFOFvCfXR1Xggb37X7Gljpp";
+        val consumerKey = "XXXXXX";
+        val consumerSecret = "xxxxxxxx";
+        val accessToken = "xxxxxxxxxx";
+        val accessTokenSecret = "xxxxxxxxx";
 
         //val conf = new SparkConf()
         //conf.setAppName("WordCount")
