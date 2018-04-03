@@ -16,10 +16,10 @@ import twitter4j.conf.ConfigurationBuilder
 object Wordcount {
   def main(args: Array[String]) {
 
-  System.setProperty("twitter4j.oauth.consumerKey", "ojyylvdYrH1K02KjCN1dIAxNH")
-  System.setProperty("twitter4j.oauth.consumerSecret", "35bKepQJBpu41rwhFLAGBrVjQ9huSqdpc0kg1VAFqAD9eZxFqi")
-  System.setProperty("twitter4j.oauth.accessToken", "967042869189111808-Y5S1E2BBaQ4nQtSHcQ0D4MAZo48b6Wh")
-  System.setProperty("twitter4j.oauth.accessTokenSecret", "aOKhKKcoOqAqRSWpHy9ghgIFOFvCfXR1Xggb37X7Gljpp")
+  System.setProperty("twitter4j.oauth.consumerKey", "xxxxxxx")
+  System.setProperty("twitter4j.oauth.consumerSecret", "xxxxxxx")
+  System.setProperty("twitter4j.oauth.accessToken", "xxxxxxx")
+  System.setProperty("twitter4j.oauth.accessTokenSecret", "xxxxxxx")
 
   // Directory to output top hashtags
   val outputDirectory = "/twitter"
